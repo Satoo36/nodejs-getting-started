@@ -1,30 +1,13 @@
-pipeline {
-    agent any
+FROM node:20
 
-    stages {
+WORKDIR /app
 
-        stage('Clone') {
-            steps {
-                git branch: 'main', url: 'https://github.com/heroku/node-js-getting-started.git'
-            }
-        }
+COPY package*.json ./
 
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t my-node-app .'
-            }
-        }
+RUN npm install
 
-        stage('Run New Container') {
-            steps {
-                sh 'docker run -d --name my-node-container -p 5000:5000 my-node-app'
-            }
-        }
+COPY . .
 
-        stage('Verify') {
-            steps {
-                sh 'docker ps'
-            }
-        }
-    }
-}
+EXPOSE 5000
+
+CMD ["npm", "start"]
